@@ -1,0 +1,21 @@
+#include <iostream>
+#include <vector>
+#include <omp.h>
+using namespace std;
+
+int main(){
+    vector<int> a={10,20,30,40,50};
+    int mn=a[0],mx=a[0],sum=0;
+
+    #pragma omp parallel for reduction(min:mn) reduction(max:mx) reduction(+:sum)
+    for(int i=0;i<a.size();i++){
+        mn=min(mn,a[i]);
+        mx=max(mx,a[i]);
+        sum+=a[i];
+    }
+
+    cout<<"Min = "<<mn;
+    cout<<"\nMax = "<<mx;
+    cout<<"\nSum = "<<sum;
+    cout<<"\nAverage = "<<(float)sum/a.size();
+}

@@ -1,0 +1,45 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stack>
+#include <omp.h>
+using namespace std;
+
+vector<vector<int>> g={{1},{0,2,3},{1,4,5},{1,4},{2,3},{2}};
+
+void bfs(int s){
+    vector<int> v(6,0); queue<int> q;
+    q.push(s); v[s]=1;
+    while(!q.empty()){
+        int x=q.front(); q.pop();
+        cout<<x<<" ";
+        #pragma omp parallel for
+        for(int i=0;i<g[x].size();i++){
+            int n=g[x][i];
+            if(!v[n]){
+                #pragma omp critical
+                {
+                    if(!v[n]) v[n]=1,q.push(n);
+                }
+            }
+        }
+    }
+}
+
+void dfs(int s){
+    vector<int> v(6,0); stack<int> st;
+    st.push(s);
+    while(!st.empty()){
+        int x=st.top(); st.pop();
+        if(v[x]) continue;
+        v[x]=1; cout<<x<<" ";
+        #pragma omp parallel for
+        for(int i=0;i<g[x].size();i++)
+            if(!v[g[x][i]]) st.push(g[x][i]);
+    }
+}
+
+int main(){
+    cout<<"BFS: "; bfs(0);
+    cout<<"\nDFS: "; dfs(0);
+}
